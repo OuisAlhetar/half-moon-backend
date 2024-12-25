@@ -1,0 +1,59 @@
+version: '3'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: half-moon-app
+    restart: unless-stopped
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - half-moon-network
+
+  nginx:
+    image: nginx:alpine
+    container_name: half-moon-nginx
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    networks:
+      - half-moon-network
+
+  db:
+    image: mysql:8.0
+    container_name: half-moon-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: half_moon_backend
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: halfmoon
+      MYSQL_PASSWORD: password
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - half-moon-network
+
+  redis:
+    image: redis:alpine
+    container_name: half-moon-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    networks:
+      - half-moon-network
+
+networks:
+  half-moon-network:
+    driver: bridge
+
+volumes:
+  dbdata:
