@@ -125,6 +125,8 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+
+    // add proiveder to config/app.php
     'providers' => ServiceProvider::defaultProviders()->merge([
         /*
          * Package Service Providers...
